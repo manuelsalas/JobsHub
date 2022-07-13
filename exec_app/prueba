@@ -1,6 +1,7 @@
 from xml.etree.ElementTree import tostring
 import requests
 import json
+from exec_app import post_jobs
 
 
 def categories_form_jobs():
@@ -23,10 +24,6 @@ def categories_form_jobs():
     except requests.exceptions.HTTPError as error:
         print(error)
 
-if __name__ == "__main__":
-    categories_form_jobs()
-    
-xxxxxxxxxx
 
 def jobsbycategories_getonboard():
     payload={}
@@ -63,3 +60,7 @@ def jobsbycategories_getonboard():
 
         except requests.exceptions.HTTPError as error:
             print(error)
+
+
+if __name__ == "__main__":
+    categories_form_jobs()
