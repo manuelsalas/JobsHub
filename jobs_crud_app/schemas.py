@@ -34,3 +34,5 @@ class JobUpdate(BaseModel):
 
 class Job(JobCreate):
     id: int
+    class Config:
+        orm_mode = True

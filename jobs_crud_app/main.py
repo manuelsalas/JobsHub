@@ -2,11 +2,14 @@ from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 from fastapi_pagination import Page, add_pagination, paginate, Params
 from fastapi_crudrouter import MemoryCRUDRouter as CRUDRouter
+from fastapi_crudrouter import SQLAlchemyCRUDRouter
 
-from . import crud, models, schemas
+from . import schemas, models, database
 from .database import SessionLocal, engine
 
-descripcion = """App Test to use the FastAPI Crud extensión"""
+descripcion = """App Test to use the FastAPI Crud extension
+Tired of rewriting the same generic CRUD routes? Need to rapidly prototype a feature for a presentation or a hackathon? Thankfully, fastapi-crudrouter has your back. As an extension to the APIRouter included with FastAPI, the FastAPI CRUDRouter will automatically generate and document your CRUD routes for you, all you have to do is pass your model and maybe your database connection.
+FastAPI-CRUDRouter is also lightning fast, well tested, and production ready."""
 
 app = FastAPI(
     title="Crud App",
@@ -28,8 +31,10 @@ def get_db():
     db = SessionLocal()
     try:
         yield db
+        db.commit()
     finally:
         db.close()
+
 
 @app.get("/")
 def root():
@@ -39,5 +44,13 @@ def root():
 # CRUD
 # ------------------------------------------------------------------------------------
 
-app.include_router(CRUDRouter(schema=schemas.Job, create_schema=schemas.JobCreate, update_schema=schemas.JobUpdate))
+router = SQLAlchemyCRUDRouter(
+    schema=schemas.Job,
+    create_schema=schemas.JobCreate,
+    update_schema=schemas.JobUpdate,
+    db_model=models.job,
+    db=get_db,
+    prefix='job'
+)
 
+app.include_router(router)
