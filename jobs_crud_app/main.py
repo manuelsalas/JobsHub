@@ -48,7 +48,7 @@ router = SQLAlchemyCRUDRouter(
     schema=schemas.Job,
     create_schema=schemas.JobCreate,
     update_schema=schemas.JobUpdate,
-    db_model=models.job,
+    db_model=models.Job,
     db=get_db,
     prefix='job'
 )
