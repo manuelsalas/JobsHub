@@ -4,7 +4,7 @@ from fastapi_pagination import Page, add_pagination, paginate, Params
 from fastapi_crudrouter import MemoryCRUDRouter as CRUDRouter
 from fastapi_crudrouter import SQLAlchemyCRUDRouter
 
-from . import schemas, models, database
+from . import schemas, models
 from .database import SessionLocal, engine
 
 descripcion = """App Test to use the FastAPI Crud extension
@@ -43,14 +43,14 @@ def root():
 # ------------------------------------------------------------------------------------
 # CRUD
 # ------------------------------------------------------------------------------------
+#db: Session = Depends(get_db)
+#db=get_db,
 
 router = SQLAlchemyCRUDRouter(
     schema=schemas.Job,
     create_schema=schemas.JobCreate,
-    update_schema=schemas.JobUpdate,
     db_model=models.Job,
-    db=get_db,
-    prefix='job'
+    db = get_db
 )
 
 app.include_router(router)
