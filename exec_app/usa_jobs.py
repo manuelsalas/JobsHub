@@ -7,10 +7,10 @@ from exec_app import post_jobs
 
 # Jobs Category
 
-categories = [
+categories1 = [
     {"Code": "0854","Value": "Computer Engineering"}
 ]
-categories1 = [
+categories = [
     {"Code": "0854","Value": "Computer Engineering"},
     {"Code": "1550","Value": "Computer Science"},
     {"Code": "1560", "Value": "Data Science Series"},
@@ -40,11 +40,6 @@ def jobs_by_categories():
             response.raise_for_status()
             r = response.json()
 
-            # print(f'Total de la consulta: {r["SearchResult"]["SearchResultCount"]}')
-            # print(f'Total de jobs encontrados: {r["SearchResult"]["SearchResultCountAll"]}')
-            print(f'Total de paginas: {r["SearchResult"]["UserArea"]["NumberOfPages"]}')
-            # print(r)
-
             pages = int(r["SearchResult"]["UserArea"]["NumberOfPages"])
 
             for i in range(pages):
@@ -52,7 +47,7 @@ def jobs_by_categories():
                 response = requests.request("GET", url, headers=headers, data=payload)
                 response.raise_for_status()
                 r = response.json()
-                
+
                 for j in range(int(r["SearchResult"]["SearchResultCount"])):
 
                     id = r["SearchResult"]["SearchResultItems"][j]["MatchedObjectDescriptor"]["PositionID"]

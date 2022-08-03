@@ -29,6 +29,7 @@ def post_job(data):
 
     except requests.exceptions.HTTPError as error:
         print(error)
+        print(error.response.text)
 
 
 if __name__ == "__main__":
