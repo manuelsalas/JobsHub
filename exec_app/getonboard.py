@@ -74,10 +74,10 @@ def jobsbycategories_getonboard():
             response = requests.request("GET", url, headers=headers, data=payload)
             response.raise_for_status()
             r = response.json()
-            
+
             #print(f'Total de paginas: {r["meta"]["total_pages"]}')
             #print(f'Cantidad de jobs en la pagina: {len(r["data"])}')
-            
+
             for i in range(r["meta"]["total_pages"]):
                 for j in range(len(r["data"])):
                     job = {

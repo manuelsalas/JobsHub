@@ -8,7 +8,7 @@ from exec_app import post_jobs
 # Jobs Category
 
 categories = [
-    {"Code": "1412", "Value": "Technical Information Services"}
+    {"Code": "0854","Value": "Computer Engineering"}
 ]
 categories1 = [
     {"Code": "0854","Value": "Computer Engineering"},
@@ -34,43 +34,47 @@ def jobs_by_categories():
     url_base = 'https://data.usajobs.gov/api/search?jobcategorycode='
 
     for k in range(len(categories)):
-
-        url = url_base + categories[k]["Code"]
-
         try:
+            url = url_base + categories[k]["Code"]+'&Page=' + str(1)
             response = requests.request("GET", url, headers=headers, data=payload)
             response.raise_for_status()
             r = response.json()
 
             # print(f'Total de la consulta: {r["SearchResult"]["SearchResultCount"]}')
             # print(f'Total de jobs encontrados: {r["SearchResult"]["SearchResultCountAll"]}')
-            # print(f'Total de paginas: {r["SearchResult"]["UserArea"]["NumberOfPages"]}')
+            print(f'Total de paginas: {r["SearchResult"]["UserArea"]["NumberOfPages"]}')
             # print(r)
 
-            for i in range(int(r["SearchResult"]["UserArea"]["NumberOfPages"])):
+            pages = int(r["SearchResult"]["UserArea"]["NumberOfPages"])
+
+            for i in range(pages):
+                url = url_base + categories[k]["Code"]+'&Page=' + str(i+1)
+                response = requests.request("GET", url, headers=headers, data=payload)
+                response.raise_for_status()
+                r = response.json()
+                
                 for j in range(int(r["SearchResult"]["SearchResultCount"])):
+
+                    id = r["SearchResult"]["SearchResultItems"][j]["MatchedObjectDescriptor"]["PositionID"]
+                    cat = categories[k]["Code"]
+                    print(f'Categoria ({cat}) ID = {id} - i = {i} - j = {j}')
+
                     job = {
                         "plataform": "USAJobs",
                         "plataform_id": r["SearchResult"]["SearchResultItems"][j]["MatchedObjectDescriptor"]["PositionID"],
                         "title": r["SearchResult"]["SearchResultItems"][j]["MatchedObjectDescriptor"]["PositionTitle"],
                         "company": r["SearchResult"]["SearchResultItems"][j]["MatchedObjectDescriptor"]["OrganizationName"],
-                        "functions": r["SearchResult"]["SearchResultItems"][j]["MatchedObjectDescriptor"]["UserArea"]["Details"]["MajorDuties"],
+                        "functions": str(r["SearchResult"]["SearchResultItems"][j]["MatchedObjectDescriptor"]["UserArea"]["Details"]["MajorDuties"][0]),
                         "requirements": r["SearchResult"]["SearchResultItems"][j]["MatchedObjectDescriptor"]["UserArea"]["Details"]["Education"],
                         "desirable": "",
                         "seniority": "",
                         "benefits": "",
-                        "remote": "",
+                        "remote": "true",
                         "remote_modality": "",
                         "country": r["SearchResult"]["SearchResultItems"][j]["MatchedObjectDescriptor"]["PositionLocationDisplay"],
                         "category": r["SearchResult"]["SearchResultItems"][j]["MatchedObjectDescriptor"]["JobCategory"][0]["Name"]
                     }
-                    #print(job)
                     post_jobs.post_job(job)
-
-                    url = url_base + categories[k]["Code"]
-                    response = requests.request("GET", url, headers=headers, data=payload)
-                    response.raise_for_status()
-                    r = response.json()
 
         except requests.exceptions.HTTPError as error:
             print(error)
