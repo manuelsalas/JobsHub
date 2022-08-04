@@ -28,7 +28,7 @@ categories = [
 # ------------------------------------------------------------------------------------
 # https://data.usajobs.gov/api/search?jobcategorycode=1412
 
-def jobs_by_categories():
+def jobs_by_categories_1():
     payload={}
     headers = {"User-Agent": "m.salas.g@gmail.com", "Authorization-key": "Hbhtu1zrmuPtgdncAoGczYOPEzveSrnbOBO7/OFst84=" }
     url_base = 'https://data.usajobs.gov/api/search?jobcategorycode='
@@ -73,6 +73,52 @@ def jobs_by_categories():
 
         except requests.exceptions.HTTPError as error:
             print(error)
+
+# **********************************************************************************
+def jobs_by_categories():
+    payload={}
+    headers = {"User-Agent": "m.salas.g@gmail.com", "Authorization-key": "Hbhtu1zrmuPtgdncAoGczYOPEzveSrnbOBO7/OFst84=" }
+    url_base = 'https://data.usajobs.gov/api/search?jobcategorycode='
+
+    for k in range(len(categories)):
+        try:
+            pages = 1
+            i = 1
+            while i <= pages:
+                url = url_base + categories[k]["Code"]+'&Page=' + str(i)
+                response = requests.request("GET", url, headers=headers, data=payload)
+                response.raise_for_status()
+                r = response.json()
+
+                if i == 1:
+                    pages = int(r["SearchResult"]["UserArea"]["NumberOfPages"])
+
+                for j in range(int(r["SearchResult"]["SearchResultCount"])):
+                    id = r["SearchResult"]["SearchResultItems"][j]["MatchedObjectDescriptor"]["PositionID"]
+                    cat = categories[k]["Code"]
+                    print(f'Categoria ({cat}) ID = {id} - i = {i} - j = {j}')
+
+                    job = {
+                        "plataform": "USAJobs",
+                        "plataform_id": r["SearchResult"]["SearchResultItems"][j]["MatchedObjectDescriptor"]["PositionID"],
+                        "title": r["SearchResult"]["SearchResultItems"][j]["MatchedObjectDescriptor"]["PositionTitle"],
+                        "company": r["SearchResult"]["SearchResultItems"][j]["MatchedObjectDescriptor"]["OrganizationName"],
+                        "functions": str(r["SearchResult"]["SearchResultItems"][j]["MatchedObjectDescriptor"]["UserArea"]["Details"]["MajorDuties"][0]),
+                        "requirements": r["SearchResult"]["SearchResultItems"][j]["MatchedObjectDescriptor"]["UserArea"]["Details"]["Education"],
+                        "desirable": "",
+                        "seniority": "",
+                        "benefits": "",
+                        "remote": "true",
+                        "remote_modality": "",
+                        "country": r["SearchResult"]["SearchResultItems"][j]["MatchedObjectDescriptor"]["PositionLocationDisplay"],
+                        "category": r["SearchResult"]["SearchResultItems"][j]["MatchedObjectDescriptor"]["JobCategory"][0]["Name"]
+                    }
+                    post_jobs.post_job(job)
+                    i = i+1
+
+        except requests.exceptions.HTTPError as error:
+            print(error)
+# ********************************************************************************************************
 
 if __name__ == "__main__":
     jobs_by_categories()
