@@ -2,15 +2,7 @@ import requests
 import json
 import sys, os
 
-#sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'jobs_app'))
-#from models import GetonboardCategory
-
-# iterar y llamar API getonboard_category para todas las categorias en 
-
 def post_category(data):
-
-    #data= {"category":  "casi bien ... 48"}
-
     headers = {}
 
     try:
@@ -28,7 +20,6 @@ def post_category(data):
 
 
 def post_job(data):
-
     try:
         url = "http://127.0.0.1/job"
         response = requests.post(url, json=data)
@@ -38,15 +29,16 @@ def post_job(data):
 
     except requests.exceptions.HTTPError as error:
         print(error)
+        print(error.response.text)
 
 
 if __name__ == "__main__":
     data= {
-    'plataform': 'GetOnBoard',
+    'plataform': 'Test-Post Jobs',
     'plataform_id': 'X00---01',
     'title': 'Python Backend',
     'company': 'Kapp',
-    'functions': 'Develop API REst server with FastAPI',
+    'functions': 'Develop API Rest server with FastAPI',
     'requirements': 'Python junior',
     'desirable': 'Web develoment',
     'seniority': 'Junior',

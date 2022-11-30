@@ -71,15 +71,17 @@ def jobsbycategories_getonboard():
         url = 'https://www.getonbrd.com/api/v0/categories/' + categories[k]["category"] + '/jobs?per_page=10&page=' + str(1) + '&expand=["company"]'
 
         try:
-            response = requests.request("GET", url, headers=headers, data=payload)
-            response.raise_for_status()
-            r = response.json()
-            
-            #print(f'Total de paginas: {r["meta"]["total_pages"]}')
-            #print(f'Cantidad de jobs en la pagina: {len(r["data"])}')
-            
-            for i in range(r["meta"]["total_pages"]):
+            i = 1
+            pages = 1
+            while i <= pages:
                 for j in range(len(r["data"])):
+
+                    url = 'https://www.getonbrd.com/api/v0/categories/' + categories[k]["category"] + '/jobs?per_page=10&page=' + str(i) + '&expand=["company"]'
+
+                    response = requests.request("GET", url, headers=headers, data=payload)
+                    response.raise_for_status()
+                    r = response.json()
+
                     job = {
                         "plataform": "GetOnBoard",
                         "plataform_id": r["data"][j]["id"],
@@ -96,12 +98,6 @@ def jobsbycategories_getonboard():
                         "category": r["data"][j]["attributes"]["category_name"]
                     }
                     post_jobs.post_job(job)
-
-                url = 'https://www.getonbrd.com/api/v0/categories/' + categories[k]["category"] + '/jobs?per_page=10&page=' + str(i+2) + '&expand=["company"]'
-
-                response = requests.request("GET", url, headers=headers, data=payload)
-                response.raise_for_status()
-                r = response.json()
 
         except requests.exceptions.HTTPError as error:
             print(error)

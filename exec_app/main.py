@@ -1,6 +1,6 @@
 from fastapi import Depends, FastAPI, HTTPException
 from jobs_app import crud, models, schemas
-from exec_app import getonboard, post_jobs
+from exec_app import getonboard, usa_jobs
 
 
 descripcion = """Consume las ofertas laborales publicadas en las API Publicas siguientes plataformas: 
@@ -50,6 +50,12 @@ def SaveCategories(skip: int = 0, limit: int = 100):
 def SaveJobsbyCategories(skip: int = 0, limit: int = 100):
    return getonboard.jobsbycategories_getonboard()
 
+# ------------------------------------------------------------------------------------
+# USAJobs - Jobs x Category
+# ------------------------------------------------------------------------------------
 
+@app.get("/UpUSAJobsbyCategories/", response_model=schemas.Job)
+def SaveUsaJobsbyCategories(skip: int = 0, limit: int = 100):
+   return usa_jobs.jobs_by_categories()
 
 
